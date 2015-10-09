@@ -1,1 +1,13 @@
-#It's for implemenation of pintool.
+# It's for implemenation of pintool.
+#####################################
+
+#How to run pintool in Ubuntu
+1. Cp MyPinTool.cpp to /source/tools/MyPinTool
+2. Go to tools and run make --directory MyPinTool
+   it will create obj-intel64 folder where we can
+   find MyPinTool.so
+3. Go to the path to your pin, and run ./pin.sh -t
+   <path to MyPinTool.so> -o <path to your output file>
+   -- <your test file>
+
+(it works for pin-2.14-7-1313)
