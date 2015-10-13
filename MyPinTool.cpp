@@ -42,7 +42,8 @@ VOID set_fixed_pim_end_flag()
 
 VOID count_fixed_pim()
 {
-    fixed_pim_count += 1;
+    if (fixed_pim_flag)
+       fixed_pim_count += 1;
 }
 
 /* ===================================================================== */
@@ -85,9 +86,8 @@ VOID Image(IMG img, VOID *v)
 VOID Instruction(INS ins, VOID *V)
 {   
     //LogFile << fixed_pim_flag << endl;
-    if (fixed_pim_flag)
-        INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)count_fixed_pim, IARG_END);
-
+    //if (fixed_pim_flag)
+    INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)count_fixed_pim, IARG_END);
 }
 
 /* ===================================================================== */
