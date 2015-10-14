@@ -22,6 +22,9 @@ int fix_mem_IterationTime = 0;
 int gen_pim_IterationTime = 0;
 int gen_mem_IterationTime = 0;
 
+UINT32 genMemOperands = 0;
+UINT32 fixedMemOperands = 0;
+
 UINT64 gen_pim_count = 0;
 UINT64 fixed_pim_count = 0;
 UINT64 gen_mem_count = 0;
@@ -61,10 +64,12 @@ VOID set_gen_pim_end_flag()
 // count fix_pim op
 VOID count_fixed_pim()
 {
-    if(fixed_pim_flag) {
-        fix_pim_IterationTime += 1;
-        fixed_pim_count += 1;
-        LogFile << "fix_K_" << fix_pim_IterationTime << " = " << fixed_pim_count << "\n" << endl;
+    if(fixedMemOperands == 0){
+        if(fixed_pim_flag) {
+            fix_pim_IterationTime += 1;
+            fixed_pim_count += 1;
+            LogFile << "fix_K_" << fix_pim_IterationTime << " = " << fixed_pim_count << "\n" << endl;
+        }
     }
 }
 
@@ -82,10 +87,12 @@ VOID count_fixed_mem_ins(VOID * ip, VOID * addr)
 // count gen_pim op
 VOID count_gen_pim()
 {  
-    if(gen_pim_flag) {
-        gen_pim_IterationTime += 1;
-        gen_pim_count += 1;
-        LogFile << "prog_K_" << gen_pim_IterationTime << " = " << gen_pim_count << endl;
+    if(fixedMemOperands == 0){
+        if(gen_pim_flag) {
+            gen_pim_IterationTime += 1;
+            gen_pim_count += 1;
+            LogFile << "prog_K_" << gen_pim_IterationTime << " = " << gen_pim_count << endl;
+        }
     }
 }
 
@@ -166,7 +173,7 @@ VOID Image(IMG img, VOID *v)
 VOID Instruction(INS ins, VOID *v)
 {   
     //prog_pim
-    UINT32 genMemOperands = INS_MemoryOperandCount(ins);
+    genMemOperands = INS_MemoryOperandCount(ins);
     // Iterate over each memory operand of the instruction.
     for (UINT32 genMemOp = 0; genMemOp < genMemOperands; genMemOp++)
     {
@@ -185,7 +192,7 @@ VOID Instruction(INS ins, VOID *v)
     INS_InsertCall(ins, IPOINT_BEFORE, (AFUNPTR)count_gen_pim, IARG_END);
     
     // fix_pim
-    UINT32 fixedMemOperands = INS_MemoryOperandCount(ins);  
+    fixedMemOperands = INS_MemoryOperandCount(ins);  
     // Iterate over each memory operand of the instruction.
     for (UINT32 fixMemOp = 0; fixMemOp < fixedMemOperands; fixMemOp++)
     {
