@@ -13,7 +13,6 @@
 /* ===================================================================== */
 /* Global Variables */
 /* ===================================================================== */
-
 std::ofstream LogFile;
 bool fixed_pim_flag = false;
 bool gen_pim_flag = false;
@@ -21,22 +20,24 @@ bool gen_pim_flag = false;
 int fix_IterationTime = 0;
 int gen_IterationTime = 0;
 
+UINT64 com_count = 0;
+UINT64 mem_count = 0;
+
 UINT64 gen_pim_count = 0;
+UINT64 gen_pim_mem_count = 0;
+
 UINT64 fixed_pim_count = 0;
-UINT64 gen_mem_count = 0;
-UINT64 fixed_mem_count = 0;
+UINT64 fixed_pim_mem_count = 0;
 
 /* ===================================================================== */
 /* Commandline Switches */
 /* ===================================================================== */
-
 KNOB<string> KnobOutputFile(KNOB_MODE_WRITEONCE, "pintool",
     "o", "pimLog.out", "specify trace file name");
 
 /* ===================================================================== */
 /* Analysis routines                                                     */
 /* ===================================================================== */
- 
 VOID set_fixed_pim_begin_flag()
 {
     fixed_pim_flag = true;
@@ -46,21 +47,21 @@ VOID set_fixed_pim_begin_flag()
 VOID set_fixed_pim_end_flag()
 {
     LogFile << "fix_K_" << fix_IterationTime << " = " << fixed_pim_count << endl;
-    LogFile << "fix_M_" << fix_IterationTime << " = " << fixed_mem_count << endl;    
+    LogFile << "fix_M_" << fix_IterationTime << " = " << fixed_pim_mem_count << endl;    
     fixed_pim_flag = false;
 }
 
 VOID set_gen_pim_begin_flag()
 {
-    gen_pim_flag = true;
     gen_IterationTime += 1;
-    LogFile << "Iteration " << gen_IterationTime << ":" << endl;
+    gen_pim_flag = true;
+    LogFile << "Iteration " << gen_IterationTime << endl;
 }
 
 VOID set_gen_pim_end_flag()
 {
     LogFile << "prog_K_" << gen_IterationTime << " = " << gen_pim_count << endl;
-    LogFile << "prog_M_" << gen_IterationTime << " = " << gen_mem_count << endl;
+    LogFile << "prog_M_" << gen_IterationTime << " = " << gen_pim_mem_count << endl;
     gen_pim_flag = false;
 }
 
@@ -75,7 +76,7 @@ VOID count_fixed_com_ins()
 VOID count_fixed_mem_ins(VOID * ip, VOID * addr)
 {
     if(fixed_pim_flag)
-        fixed_mem_count += 1;
+        fixed_pim_mem_count += 1;
 }
 
 // count gen compute instructions
@@ -83,13 +84,17 @@ VOID count_gen_com_ins()
 {  
     if(gen_pim_flag)
         gen_pim_count += 1;
+    else
+        com_count += 1;
 }
 
 // count gen memory instructions
 VOID count_gen_mem_ins(VOID * ip, VOID * addr)
 {   
     if(gen_pim_flag)
-        gen_mem_count += 1;
+        gen_pim_mem_count += 1;
+    else
+        mem_count += 1;
 }
 
 /* ===================================================================== */
@@ -201,7 +206,14 @@ VOID Instruction(INS ins, VOID *v)
 
 VOID Fini(INT32 code, VOID *v)
 {
-    LogFile << "==============================";
+    LogFile << "==========Total instruction=========" << endl;
+    LogFile << "fix_K_" << fix_IterationTime << " = " << fixed_pim_count << endl;
+    LogFile << "fix_M_" << fix_IterationTime << " = " << fixed_pim_mem_count << endl;  
+    LogFile << "prog_K_" << gen_IterationTime << " = " << gen_pim_count << endl;
+    LogFile << "prog_M_" << gen_IterationTime << " = " << gen_pim_mem_count << endl;
+    LogFile << "K = " << com_count << endl;
+    LogFile << "M = " << mem_count << endl;
+    LogFile << "====================================";
     LogFile.close();
 }
 
