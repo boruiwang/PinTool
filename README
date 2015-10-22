@@ -1,7 +1,7 @@
 # It's for implemenation of pintool.
 #####################################
 
-#How to run pintool in Ubuntu
+# How to run pintool in Ubuntu
 1. Cp MyPinTool.cpp to /source/tools/MyPinTool
 2. Go to tools and run make --directory MyPinTool
    it will create obj-intel64 folder where we can
@@ -11,3 +11,10 @@
    -- <your test file>
 
 (it works for pin-2.14-7-1313)
+
+# How to use simulator in python 2.6 or 2.7
+# Command line is:
+# python simulator.py -f <pimlogfile> fixPIM_comp progPIM_comp comp mem offloading return sync
+
+# Also you use python simulator.py -h to see the usage.
+# Please use the PIM log from my pintool, because it needs to parse the file.
