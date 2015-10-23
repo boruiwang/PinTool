@@ -6,7 +6,7 @@ class PIM(object):
 	"""docstring for ClassName"""
 	def __init__(self, input):
 		self.filename = input
-		self.LogList = []
+		self.LogList = []	# LogList stores PIM output
 
 	def ParsePIMLog(self):
 		with open(self.filename, 'r') as file:
@@ -19,22 +19,30 @@ class PIM(object):
 	
 	def CalLatency(self):
 		#Latencylist = [fix_comp, fix_mem, prog_comp, prog_mem, comp, mem      ]
-		LatencyList = [sys.argv[3], '0', sys.argv[4], '0', sys.argv[5], sys.argv[6]]
+		fix_mem = '0'
+		prog_mem = '0'
+		LatencyList = [sys.argv[3], fix_mem, sys.argv[4], prog_mem, sys.argv[5], sys.argv[6]]
 		exe_time = 0
 
+		# comp + mem
 		for i in range(6):
 			latency = float(LatencyList[i])
 			instrCount = float(self.LogList[i])
 			exe_time += latency * instrCount
 
-		#                offloading_lat     + return_lat          + sync_lat  
-		exe_time += 2 * (float(sys.argv[7]) + float(sys.argv[8])) + float(sys.argv[9])
+		# offloading
+		for i in range(7, 11):
+			exe_time += float(sys.argv[i])
+ 		
+ 		# sync
+		exe_time += float(sys.argv[11])
 
 		return exe_time
 
 		
 def usage():
-	usage = "usage: %prog -f logfile fixPIM_comp progPIM_comp comp mem offloading return sync"
+	usage = "usage: %prog -f logfile fixPIM_comp progPIM_comp comp mem\
+									 fixPIM_offloading fixPIM_return progPIM_offloading progPIM_return sync"
 	parser = OptionParser(usage=usage)
 	parser.add_option("-f", "--file", type=="string", dest="PIMLog",
 					    help="parse PIM log file", metavar="FILE")
@@ -48,7 +56,7 @@ def usage():
 		sys.exit(4)
 	
 	# check input
-	if len(sys.argv) != 10:
+	if len(sys.argv) != 12:
 		print "Error: input parameters is wrong, Please check your input!"
 		sys.exit(4)
 	
