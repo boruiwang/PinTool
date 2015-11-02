@@ -1,0 +1,19 @@
+##################################
+# Test result
+# fixPIM_comp_lat = 2 cycles
+# progPIM_comp_lat = 2 cycles
+# comp_lat = 1 cycle 
+# mem_lat = 100 cycles
+# fixPIM_offloading_lat = 2 cycles
+# fixPIM_return_lat = 2 cycles
+# progPIM_offloading_lat = 10 cycles
+# progPIM_return_lat = 10 cycles
+# sync_lat = 200 cycles
+##################################
+
+#test case            size(iterations)    test output        result(cycles)
+ test1.c              1000 		          pimLog_test1.out   9152962
+ test2.c    		  72		          pimLog_test2.out   4734656
+ CG_SER				  15(W)
+ FFT_SER              6(W)
+ MG_SER               4(W)
