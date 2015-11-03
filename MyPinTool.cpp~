@@ -5,10 +5,10 @@
 /* ===================================================================== */
 /* Names of all the flags*/
 /* ===================================================================== */
-#define DUMMY_FIXED_PIM_BEGIN "dummy_fixed_pim_begin_"
-#define DUMMY_FIXED_PIM_END "dummy_fixed_pim_end_"
-#define DUMMY_GEN_PIM_BEGIN "dummy_gen_pim_begin_"
-#define DUMMY_GEN_PIM_END "dummy_gen_pim_end_"
+#define DUMMY_FIXED_PIM_BEGIN "dummy_fixed_pim_begin"
+#define DUMMY_FIXED_PIM_END "dummy_fixed_pim_end"
+#define DUMMY_GEN_PIM_BEGIN "dummy_gen_pim_begin"
+#define DUMMY_GEN_PIM_END "dummy_gen_pim_end"
 
 /* ===================================================================== */
 /* Global Variables */
