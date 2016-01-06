@@ -469,6 +469,7 @@ static void conj_grad(int colidx[],
   // The conj grad iteration loop
   //---->
   //---------------------------------------------------------------------
+  dummy_gen_pim_begin();
   for (cgit = 1; cgit <= cgitmax; cgit++) {
     //---------------------------------------------------------------------
     // q = A.p
@@ -536,9 +537,9 @@ static void conj_grad(int colidx[],
     //---------------------------------------------------------------------
     d = 0.0;
     for (j = 0; j < lastcol - firstcol + 1; j++) {
-      dummy_fixed_pim_begin();
+      //dummy_fixed_pim_begin();
       d = d + p[j]*q[j];
-      dummy_fixed_pim_end();
+      //dummy_fixed_pim_end();
       //fprintf(pp, "fix_2\n");
     }
 
@@ -558,10 +559,10 @@ static void conj_grad(int colidx[],
     //---------------------------------------------------------------------
     rho = 0.0;
     for (j = 0; j < lastcol - firstcol + 1; j++) {
-      dummy_fixed_pim_begin();
+      //dummy_fixed_pim_begin();
       z[j] = z[j] + alpha*p[j];
       r[j] = r[j] - alpha*q[j];
-      dummy_fixed_pim_end();
+      //dummy_fixed_pim_end();
       //fprintf(pp, "fix_4\n");
     }
             
@@ -570,9 +571,9 @@ static void conj_grad(int colidx[],
     // Now, obtain the norm of r: First, sum squares of r elements locally...
     //---------------------------------------------------------------------
     for (j = 0; j < lastcol - firstcol + 1; j++) {
-      dummy_fixed_pim_begin();
+      //dummy_fixed_pim_begin();
       rho = rho + r[j]*r[j];
-      dummy_fixed_pim_end();
+      //dummy_fixed_pim_end();
       //fprintf(pp, "fix_2\n");
     }
 
@@ -585,13 +586,13 @@ static void conj_grad(int colidx[],
     // p = r + beta*p
     //---------------------------------------------------------------------
     for (j = 0; j < lastcol - firstcol + 1; j++) {
-      dummy_fixed_pim_begin();
+      //dummy_fixed_pim_begin();
       p[j] = r[j] + beta*p[j];
-      dummy_fixed_pim_end();
+      //dummy_fixed_pim_end();
       //fprintf(pp, "fix_2\n");
     }
   } // end of do cgit=1,cgitmax
-
+  dummy_gen_pim_end();
   //---------------------------------------------------------------------
   // Compute residual norm explicitly:  ||r|| = ||x - A.z||
   // First, form A.z
@@ -947,14 +948,14 @@ static void vecset(int n, double v[], int iv[], int *nzv, int i, double val)
 
 /* Our dummy function*/
 void dummy_fixed_pim_begin() {
-  //printf("fix_begin\n");
+  printf("fix_begin\n");
 }
 void dummy_fixed_pim_end() {
-  //printf("fix_end\n");
+  printf("fix_end\n");
 }
 void dummy_gen_pim_begin() {
-  printf("gen_begin\n");
+  //printf("gen_begin\n");
 }
 void dummy_gen_pim_end() {
-  printf("gen_end\n");
+  //printf("gen_end\n");
 }
