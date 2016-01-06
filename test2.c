@@ -32,8 +32,6 @@ void foo(void)
 			dummy_fixed_pim_begin();
 			y[j] = (x[j] + x[j-1] + x[j+1])/3;
 			dummy_fixed_pim_end();
-			
-			//printf("y[%d]=%f\n", j, y[j]);
 		}
 		
 		do_y(y);  
