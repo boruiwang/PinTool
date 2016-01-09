@@ -5,10 +5,12 @@
 /* ===================================================================== */
 /* Names of all the flags*/
 /* ===================================================================== */
-#define DUMMY_FIXED_PIM_BEGIN "dummy_fixed_pim_begin_"
-#define DUMMY_FIXED_PIM_END "dummy_fixed_pim_end_"
-#define DUMMY_GEN_PIM_BEGIN "dummy_gen_pim_begin_"
-#define DUMMY_GEN_PIM_END "dummy_gen_pim_end_"
+#define DUMMY_FIXED_PIM_BEGIN "dummy_fixed_pim_begin"
+#define DUMMY_FIXED_PIM_END "dummy_fixed_pim_end"
+#define DUMMY_GEN_PIM_BEGIN "dummy_gen_pim_begin"
+#define DUMMY_GEN_PIM_END "dummy_gen_pim_end"
+#define DUMMY_MAIN_BEGIN "dummy_main_begin"
+#define DUMMY_MAIN_END "dummy_main_end"
 
 /* ===================================================================== */
 /* Global Variables */
@@ -16,6 +18,7 @@
 std::ofstream LogFile;
 bool fixed_pim_flag = false;
 bool gen_pim_flag = false;
+bool main_flag = false;
 
 int fix_IterationTime = 0;
 int gen_IterationTime = 0;
@@ -65,36 +68,58 @@ VOID set_gen_pim_end_flag()
     gen_pim_flag = false;
 }
 
+VOID set_main_begin_flag() {
+    main_flag = true;
+    LogFile << "main_start" << main_flag << endl;
+}
+
+VOID set_main_end_flag() {
+    main_flag = false;
+    LogFile << "main_end" << main_flag << endl;
+}
+
 // count fix compute instructions
 VOID count_fixed_com_ins()
 {
-    if(fixed_pim_flag)
-        fixed_pim_count += 1;
+    if(main_flag) {
+        if(fixed_pim_flag) {
+            fixed_pim_count += 1;
+            com_count -= 1;
+        }
+    }
 }
 
 // count fix memory instructions
 VOID count_fixed_mem_ins(VOID * ip, VOID * addr)
 {
-    if(fixed_pim_flag)
-        fixed_pim_mem_count += 1;
+    if(main_flag) {
+        if(fixed_pim_flag) {
+            fixed_pim_mem_count += 1;
+            mem_count -= 1;
+        }
+    }
 }
 
 // count gen compute instructions
 VOID count_gen_com_ins()
 {  
-    if(gen_pim_flag)
-        gen_pim_count += 1;
-    else
-        com_count += 1;
+    if(main_flag) {
+        if(gen_pim_flag)
+            gen_pim_count += 1;
+        else
+            com_count += 1;
+    }
 }
 
 // count gen memory instructions
 VOID count_gen_mem_ins(VOID * ip, VOID * addr)
 {   
-    if(gen_pim_flag)
-        gen_pim_mem_count += 1;
-    else
-        mem_count += 1;
+    if(main_flag) {
+        if(gen_pim_flag)
+            gen_pim_mem_count += 1;
+        else
+            mem_count += 1;
+    }
 }
 
 /* ===================================================================== */
@@ -153,6 +178,30 @@ VOID Image(IMG img, VOID *v)
                         IARG_END);
 
         RTN_Close(gen_pim_end);
+    }
+
+    //  Find the dummy_main_begin() function.
+    RTN main_begin = RTN_FindByName(img, DUMMY_MAIN_BEGIN);
+    if (RTN_Valid(main_begin))
+    {
+        RTN_Open(main_begin);
+        // Instrument dummy_gen_pim_begin() to set begin flag
+        RTN_InsertCall(main_begin, IPOINT_AFTER,
+                        (AFUNPTR)set_main_begin_flag,
+                        IARG_END);
+        RTN_Close(main_begin);
+    }
+
+    //  Find the dummy_main_end() function.
+    RTN main_end = RTN_FindByName(img, DUMMY_MAIN_END);
+    if (RTN_Valid(main_end))
+    {
+        RTN_Open(main_end);
+        // Instrument dummy_gen_pim_begin() to set begin flag
+        RTN_InsertCall(main_end, IPOINT_AFTER,
+                        (AFUNPTR)set_main_end_flag,
+                        IARG_END);
+        RTN_Close(main_end);
     }
 }
 

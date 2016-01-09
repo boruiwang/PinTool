@@ -74,7 +74,8 @@ void dummy_fixed_pim_begin();
 void dummy_fixed_pim_end();
 void dummy_gen_pim_begin();
 void dummy_gen_pim_end();
-
+void dummy_main_begin();
+void dummy_main_end();
 //-------------------------------------------------------------------------c
 // These arrays are in common because they are quite large
 // and probably shouldn't be allocated on the stack. They
@@ -259,24 +260,25 @@ int main()
   norm2u3(r, n1, n2, n3, &rnm2, &rnmu, nx[lt], ny[lt], nz[lt], p);
   old2 = rnm2;
   oldu = rnmu;
-
+  dummy_main_begin();
+  fprintf(p, "main_begin\n");
   for (it = 1; it <= nit; it++) {
     if ((it == 1) || (it == nit) || ((it % 5) == 0)) {
       printf("  iter %3d\n", it);
     }
     if (timeron) timer_start(T_mg3P);
     dummy_gen_pim_begin();
-    fprintf(p, "progPIM1\n");
     mg3P(u, v, r, a, c, n1, n2, n3, p);
     dummy_gen_pim_end();
     if (timeron) timer_stop(T_mg3P);
     if (timeron) timer_start(T_resid2);
     dummy_gen_pim_begin();
-    fprintf(p, "progPIM2\n");
     resid(u, v, r, n1, n2, n3, a, k, p);
     dummy_gen_pim_end();
     if (timeron) timer_stop(T_resid2);
   }
+  fprintf(p, "main_end\n");
+  dummy_main_end();
 
   norm2u3(r, n1, n2, n3, &rnm2, &rnmu, nx[lt], ny[lt], nz[lt], p);
 
@@ -330,7 +332,7 @@ int main()
   nn = 1.0 * nx[lt] * ny[lt] * nz[lt];
 
   if (t != 0.0) {
-    fprintf(p, "mflops\n");
+    //fprintf(p, "4\n");
     mflops = 58.0 * nit * nn * 1.0e-6 / t;
   } else {
     mflops = 0.0;
@@ -495,6 +497,7 @@ static void psinv(void *or, void *ou, int n1, int n2, int n3,
   if (timeron) timer_start(T_psinv);
   for (i3 = 1; i3 < n3-1; i3++) {
     for (i2 = 1; i2 < n2-1; i2++) {
+      dummy_fixed_pim_begin();
       for (i1 = 0; i1 < n1; i1++) {
         //fprintf(p, "psinv_6 floating point loop\n");
         //dummy_fixed_pim_begin();
@@ -506,6 +509,8 @@ static void psinv(void *or, void *ou, int n1, int n2, int n3,
                + r[i3+1][i2-1][i1] + r[i3+1][i2+1][i1];
         //dummy_fixed_pim_end();
       }
+      dummy_fixed_pim_end();
+      dummy_fixed_pim_begin();
       for (i1 = 1; i1 < n1-1; i1++) {
         //fprintf(p, "psinv_10 floating point loop\n");
         //dummy_fixed_pim_begin();
@@ -521,6 +526,7 @@ static void psinv(void *or, void *ou, int n1, int n2, int n3,
         //            + c[3] * ( r2[i1-1] + r2[i1+1] )
         //--------------------------------------------------------------------
       }
+      dummy_fixed_pim_end();
     }
   }
   if (timeron) timer_stop(T_psinv);
@@ -564,6 +570,7 @@ static void resid(void *ou, void *ov, void *or, int n1, int n2, int n3,
   if (timeron) timer_start(T_resid);
   for (i3 = 1; i3 < n3-1; i3++) {
     for (i2 = 1; i2 < n2-1; i2++) {
+      dummy_fixed_pim_begin();
       for (i1 = 0; i1 < n1; i1++) {
         //fprintf(p, "resid_6 floating point loop\n");
         //dummy_fixed_pim_begin();
@@ -575,6 +582,8 @@ static void resid(void *ou, void *ov, void *or, int n1, int n2, int n3,
                + u[i3+1][i2-1][i1] + u[i3+1][i2+1][i1];
         //dummy_fixed_pim_end();
       }
+      dummy_fixed_pim_end();
+      dummy_fixed_pim_begin();
       for (i1 = 1; i1 < n1-1; i1++) {
         //dummy_fixed_pim_begin();
         //fprintf(p, "resid_9 floating point loop\n");
@@ -590,6 +599,7 @@ static void resid(void *ou, void *ov, void *or, int n1, int n2, int n3,
                       - a[3] * ( u2[i1-1] + u2[i1+1] );
         //dummy_fixed_pim_end();
       }
+      dummy_fixed_pim_end();
     }
   }
   //printf("resid, res:%f\n", rrr);
@@ -652,7 +662,7 @@ static void rprj3(void *or, int m1k, int m2k, int m3k,
     i3 = 2*j3-d3;
     for (j2 = 1; j2 < m2j-1; j2++) {
       i2 = 2*j2-d2;
-
+      dummy_fixed_pim_begin();
       for (j1 = 1; j1 < m1j; j1++) {
         i1 = 2*j1-d1;
         //fprintf(p, "rprj3_6 floating point loop\n");
@@ -665,6 +675,8 @@ static void rprj3(void *or, int m1k, int m2k, int m3k,
                + r[i3  ][i2+2][i1] + r[i3+2][i2+2][i1];
         //dummy_fixed_pim_end();
       }
+      dummy_fixed_pim_end();
+      dummy_fixed_pim_begin();
       for (j1 = 1; j1 < m1j-1; j1++) {
         i1 = 2*j1-d1;
         //fprintf(p, "rprj3_14 floating point loop\n");
@@ -684,6 +696,7 @@ static void rprj3(void *or, int m1k, int m2k, int m3k,
               + 0.0625 * (y1[i1] + y1[i1+2]);
         //dummy_fixed_pim_end();
       }
+      dummy_fixed_pim_end();
     }
   }
   if (timeron) timer_stop(T_rprj3);
@@ -1281,4 +1294,10 @@ void dummy_gen_pim_begin() {
 }
 void dummy_gen_pim_end() {
   //printf("gen_end\n");
+}
+void dummy_main_begin() {
+  printf("main_start\n");
+}
+void dummy_main_end(){
+  printf("main_end\n");
 }

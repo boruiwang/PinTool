@@ -126,6 +126,8 @@ void dummy_fixed_pim_begin();
 void dummy_fixed_pim_end();
 void dummy_gen_pim_begin();
 void dummy_gen_pim_end();
+void dummy_main_begin();
+void dummy_main_end();
 
 //---------------------------------------------------------------------
 
@@ -295,7 +297,8 @@ int main(int argc, char *argv[])
   timer_stop(T_init);
 
   printf(" Initialization time = %15.3f seconds\n", timer_read(T_init));
-
+  
+  dummy_main_begin();
   timer_start(T_bench);
   // test printf function
   /*
@@ -311,7 +314,7 @@ int main(int argc, char *argv[])
   //---->
   //---------------------------------------------------------------------
   // gen begin
-  //fprintf(pp, "gen_begin\n");
+  fprintf(pp, "main_start\n");
   //dummy_gen_pim_begin();
   for (it = 1; it <= 1; it++) {
     //---------------------------------------------------------------------
@@ -332,13 +335,13 @@ int main(int argc, char *argv[])
     for (j = 0; j < lastcol - firstcol + 1; j++) {
       norm_temp1 = norm_temp1 + x[j]*z[j];
       norm_temp2 = norm_temp2 + z[j]*z[j];
-      //fprintf(p, "gen_4\n");
+      //fprintf(pp, "gen_4\n");
     }
 
     norm_temp2 = 1.0 / sqrt(norm_temp2);
 
     zeta = SHIFT + 1.0 / norm_temp1;
-    //fprintf(p, "gen_3\n");
+    //fprintf(pp, "gen_3\n");
     if (it == 1) 
       printf("\n   iteration           ||r||                 zeta\n");
     printf("    %5d       %20.14E%20.13f\n", it, rnorm, zeta);
@@ -352,10 +355,9 @@ int main(int argc, char *argv[])
     }
   } // end of main iter inv pow meth
   // gen end
-  //dummy_gen_pim_end();
-  //fprintf(pp, "gen_end\n");
+  fprintf(pp, "main_end\n");
   timer_stop(T_bench);
-
+  dummy_main_end();
   //---------------------------------------------------------------------
   // End of timed section
   //---------------------------------------------------------------------
@@ -485,12 +487,12 @@ static void conj_grad(int colidx[],
 
     for (j = 0; j < lastrow - firstrow + 1; j++) {
       sum = 0.0;
+      dummy_fixed_pim_begin();
       for (k = rowstr[j]; k < rowstr[j+1]; k++) {
-        dummy_fixed_pim_begin();
         sum = sum + a[k]*p[colidx[k]];
-        dummy_fixed_pim_end();
         //fprintf(pp, "fix_2\n");
       }
+      dummy_fixed_pim_end();
       q[j] = sum;
     }
 
@@ -536,13 +538,14 @@ static void conj_grad(int colidx[],
     // Obtain p.q
     //---------------------------------------------------------------------
     d = 0.0;
+    dummy_fixed_pim_begin();
     for (j = 0; j < lastcol - firstcol + 1; j++) {
       //dummy_fixed_pim_begin();
       d = d + p[j]*q[j];
       //dummy_fixed_pim_end();
       //fprintf(pp, "fix_2\n");
     }
-
+    dummy_fixed_pim_end();
     //---------------------------------------------------------------------
     // Obtain alpha = rho / (p.q)
     //---------------------------------------------------------------------
@@ -558,6 +561,7 @@ static void conj_grad(int colidx[],
     // and    r = r - alpha*q
     //---------------------------------------------------------------------
     rho = 0.0;
+    dummy_fixed_pim_begin();
     for (j = 0; j < lastcol - firstcol + 1; j++) {
       //dummy_fixed_pim_begin();
       z[j] = z[j] + alpha*p[j];
@@ -565,18 +569,19 @@ static void conj_grad(int colidx[],
       //dummy_fixed_pim_end();
       //fprintf(pp, "fix_4\n");
     }
-            
+    dummy_fixed_pim_end();       
     //---------------------------------------------------------------------
     // rho = r.r
     // Now, obtain the norm of r: First, sum squares of r elements locally...
     //---------------------------------------------------------------------
+    dummy_fixed_pim_begin();
     for (j = 0; j < lastcol - firstcol + 1; j++) {
       //dummy_fixed_pim_begin();
       rho = rho + r[j]*r[j];
       //dummy_fixed_pim_end();
       //fprintf(pp, "fix_2\n");
     }
-
+    dummy_fixed_pim_end();
     //---------------------------------------------------------------------
     // Obtain beta:
     //---------------------------------------------------------------------
@@ -585,12 +590,14 @@ static void conj_grad(int colidx[],
     //---------------------------------------------------------------------
     // p = r + beta*p
     //---------------------------------------------------------------------
+    dummy_fixed_pim_begin();
     for (j = 0; j < lastcol - firstcol + 1; j++) {
       //dummy_fixed_pim_begin();
       p[j] = r[j] + beta*p[j];
       //dummy_fixed_pim_end();
       //fprintf(pp, "fix_2\n");
     }
+    dummy_fixed_pim_end();
   } // end of do cgit=1,cgitmax
   dummy_gen_pim_end();
   //---------------------------------------------------------------------
@@ -601,12 +608,12 @@ static void conj_grad(int colidx[],
   sum = 0.0;
   for (j = 0; j < lastrow - firstrow + 1; j++) {
     d = 0.0;
+    dummy_fixed_pim_begin();
     for (k = rowstr[j]; k < rowstr[j+1]; k++) {
-      dummy_fixed_pim_begin();
       d = d + a[k]*z[colidx[k]];
-      dummy_fixed_pim_end();
       //fprintf(pp, "fix_2\n");
     }
+    dummy_fixed_pim_end();
     r[j] = d;
   }
 
@@ -958,4 +965,11 @@ void dummy_gen_pim_begin() {
 }
 void dummy_gen_pim_end() {
   //printf("gen_end\n");
+}
+void dummy_main_begin() {
+  printf("main_start\n");
+}
+
+void dummy_main_end(){
+  printf("main_end\n");
 }
