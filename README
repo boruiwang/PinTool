@@ -1,0 +1,23 @@
+####################################
+# 
+# 
+#####################################
+
+# How to run pintool in Ubuntu
+1. MyPinTool.cpp is the file to trace the our target program which is under pin-2.14-71313-gcc.4.4.7-linux/source/tools/MyPinTool.
+
+2. Every time you change the code in MyPinTool.cpp, you should go to pin-2.14-71313-gcc.4.4.7-linux/source/tools and run "make --directory MyPinTool" which will create obj-intel64 folder where we can find MyPinTool.so.
+
+3. Under pin-2.14-71313-gcc.4.4.7-linux path, use "./pin.sh -t <path to MyPinTool.so> -o <path to your output file> -- <your test file>" to run the program. If you command line is wrong, it will create a file named pin.log in same folder to tell you the error. And if it is correct, then it will create a pimLog.out file, which is our output.
+
+(it works for pin-2.14-7-1313)
+
+# How to use simulator in python 2.6 or 2.7
+  Command line is:
+  python simulator.py -f <pimlogfile> fixPIM_comp progPIM_comp comp mem offloading return sync
+
+  Also you use python simulator.py -h to see the usage.
+  Please use the PIM log from my pintool, because the simulator needs to parse the file.
+
+# SNU_NPS-1.0.3
+  This is NASA bench mark and we are using NPB3.3-SER-C as our application. We only deal with CG and MG currently, so you can use "make CG CLASS=S" under /NPB3.3-SER-C to compiler the program and the output is under bin folder.
