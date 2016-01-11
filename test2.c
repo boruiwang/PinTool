@@ -8,6 +8,10 @@ void dummy_gen_pim_end(){}
 void dummy_main_begin(){};
 void dummy_main_end(){};
 
+float x[N+10];
+float y[N+10];
+time_t t;
+
 void do_y(float* u)
 {
 	int i;
@@ -17,28 +21,21 @@ void do_y(float* u)
 
 void foo(void)
 {
-	float x[N+10];
-	float y[N+10];
 	int i,j;
-	time_t t;
-
-	srand((unsigned) time(&t));
-	for(i=0; i< N+2; i++)
-		x[i] = rand();
 
 	//dummy_gen_pim_begin();
 	for ( i = 0; i < N+2; i++ ) {
-		//dummy_fixed_pim_begin();	
+		dummy_fixed_pim_begin();	
 		for(j = 3; j < N-1; j++)
 		{	
 			y[j] = (x[j] + x[j-1] + x[j+1])/3;
 		}
-		//dummy_fixed_pim_end();
+		dummy_fixed_pim_end();
 		do_y(y);  
 	}
 	//dummy_gen_pim_end();
 
-	
+
 	printf("y[4]=%f\n", y[4]);
 	printf("y[N-1]=%f\n", y[N-2]);
 	printf("y[5]=%f\n", y[5]);
@@ -47,6 +44,11 @@ void foo(void)
 
 int main(int ac, const char *av[])
 {
+	int i;
+	srand((unsigned) time(&t));
+	for(i=0; i< N+2; i++)
+		x[i] = rand();
+
 	dummy_main_begin();
 	foo();
 	dummy_main_end();
