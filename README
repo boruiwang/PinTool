@@ -3,7 +3,12 @@
 # 
 #####################################
 
-# How to run pintool in Ubuntu
+# How MyPinTool works
+1. We define three kinds of dummy function, dummy_fixed_pim, dummy_gen_pim(prog_pim) and dummy_main, so in your source code, you need to define those three functions so that pintool can start to work. Also you need to make sure the symbol of those functions in your execution file, using "nm <your file>", match with MyPinTool. You can look at line8 to line13 to change the symbol.
+2. Because we only focus on part of the program, so we implement dummy_main function to get rid of the part that we don't care about. So in the MyPinTool, every method begins with dummy_main_begin.
+3. It will count computation instruction and memory instruction for your fix_pim or prog_pim or not_offloading_pim in an output file.
+
+# How to run MyPinTool in Ubuntu
 1. MyPinTool.cpp is the file to trace the our target program which is under pin-2.14-71313-gcc.4.4.7-linux/source/tools/MyPinTool.
 
 2. Every time you change the code in MyPinTool.cpp, you should go to pin-2.14-71313-gcc.4.4.7-linux/source/tools and run "make --directory MyPinTool" which will create obj-intel64 folder where we can find MyPinTool.so.
